@@ -42,7 +42,7 @@ def detail(request, question_id):
     """
     pybo 내용 출력
     """
-    page = request.GET.get('page', '1')
+    page = request.GET.get('page', '1') #답변 페이징을 위함
     so = request.GET.get('so', 'recent') 
     question = get_object_or_404(Question, pk=question_id)
     # question = Question.objects.get(id=question_id)
@@ -59,14 +59,17 @@ def detail(request, question_id):
             question.view = 0
     question.save()
     """
-
-    if so == 'recommend':
+    
+    """
+    답변을 추천순, 최신순으로 보여주기
+    """
+    if so == 'recommend': 
         answer_list = Answer.objects.filter(question=question).annotate(num_voter=Count('voter')).order_by('-num_voter','-create_date')
     else:
         answer_list = Answer.objects.filter(question=question).order_by('-create_date')
 
-    paginator = Paginator(answer_list, 5)
+    paginator = Paginator(answer_list, 5) #답변을 5개까지만 보여주기
     page_obj = paginator.get_page(page)
 
-    context = {'question': question, 'answer_list': page_obj, 'page': page, 'so': so, 'ip':ip}
+    context = {'question': question, 'answer_list': page_obj, 'page': page, 'so': so}
     return render(request, 'pybo/question_detail.html', context)
