@@ -22,8 +22,9 @@
         <tr class="text-center thead-dark">
             <th>번호</th>
             <th>추천</th>
-            <th style="width:50%">제목</th>
+            <th style="width:40%">제목</th>
             <th>글쓴이</th>
+            <th>조회수</th>
             <th>작성일시</th>
         </tr>
         </thead>
@@ -40,15 +41,18 @@
                 {% endif %}
             </td>
             <td class="text-left">
-            <a href="{% url 'pybo:detail' question.id %}">
-                {{ question.subject }}
-                {% if question.answer_set.count > 0 %}
-                    <span class="text-danger small ml-2">
-                        {{ question.answer_set.count }}
-                    </span>
-                    {% endif %}
-            </a></td>
+                <a href="{% url 'pybo:detail' question.id %}">
+                    {{ question.subject }}
+                    {% if question.answer_set.count > 0 %}
+                        <span class="text-danger small ml-2">
+                            {{ question.answer_set.count }}
+                        </span>
+                        {% endif %}
+                </a>
+            </td>
             <td>{{ question.author.username }}</td>
+            <!-- 조회수 들어갈 자리 -->
+            <td>{{ question.view }}</td>
             <td>{{ question.create_date }}</td>
         </tr>
         {% endfor %}
@@ -114,7 +118,6 @@ $(document).ready(function(){
         $("#page").val($(this).data("page"));
         $("#searchForm").submit();
     });
-
     $("#btn_search").on('click', function(){
         $("#kw").val($(".kw").val());
         $("#page").val(1); // 검색 버튼을 클릭할 경우 1페이지부터 조회한다.

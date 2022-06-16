@@ -1,8 +1,16 @@
 from django.core.paginator import Paginator
 from django.shortcuts import render, get_object_or_404
 
-from ..models import Question, Answer
+from ..models import Question, Answer, QuestionCount
 from django.db.models import Q, Count
+
+def get_client_ip(request):
+    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+    if x_forwarded_for:
+        ip = x_forwarded_for.split(',')[-1].strip()
+    else:
+        ip = request.META.get('REMOTE_ADDR')
+    return ip
 
 def index(request):
     """
@@ -45,9 +53,10 @@ def detail(request, question_id):
     page = request.GET.get('page', '1') #답변 페이징을 위함
     so = request.GET.get('so', 'recent') 
     question = get_object_or_404(Question, pk=question_id)
-    # question = Question.objects.get(id=question_id)
-
-    """
+    
+    ip = get_client_ip(request)
+    
+    #조회수 표시하기
     que_view_count = QuestionCount.objects.filter(ip=ip, question=question).count()
 
     if que_view_count == 0:
@@ -56,10 +65,9 @@ def detail(request, question_id):
         if question.view:
             question.view += 1
         else:
-            question.view = 0
+            question.view = 1
     question.save()
-    """
-    
+
     """
     답변을 추천순, 최신순으로 보여주기
     """
@@ -71,5 +79,5 @@ def detail(request, question_id):
     paginator = Paginator(answer_list, 5) #답변을 5개까지만 보여주기
     page_obj = paginator.get_page(page)
 
-    context = {'question': question, 'answer_list': page_obj, 'page': page, 'so': so}
+    context = {'question': question, 'answer_list': page_obj, 'page': page, 'so': so, 'ip':ip}
     return render(request, 'pybo/question_detail.html', context)
