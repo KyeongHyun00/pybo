@@ -1,5 +1,17 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.urls import reverse
+
+class Category(models.Model):
+    name = models.CharField(max_length=20, unique=True)
+    description = models.CharField(max_length=200, null=True, blank=True)
+    has_answer = models.BooleanField(default=True) #답변 가능 여부
+
+    def __str__(self):
+        return self.name
+    
+    def get_absolute_url(self):
+        return reverse('pybo:index', args=[self.name])
 
 class Question(models.Model):
     author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='author_question')
@@ -9,6 +21,8 @@ class Question(models.Model):
     create_date = models.DateTimeField()
     voter = models.ManyToManyField(User, related_name='voter_question')  # voter 추가
     view = models.PositiveIntegerField(default=0, blank=True, null=True)
+    #카테고리 모델 연결하기
+    category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='category_question')
 
     def __str__(self):
         return self.subject

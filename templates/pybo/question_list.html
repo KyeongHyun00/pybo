@@ -2,21 +2,45 @@
 {% load pybo_filter %}
 {% block content %}
 <div class="container my-3">
-    <div class="row justify-content-between my-3">
-        <div class="col-2">
-            <select class="form-control so">
-                <option value="recent" {% if so == 'recent' %}selected{% endif %}>최신순</option>
-                <option value="recommend" {% if so == 'recommend' %}selected{% endif %}>추천순</option>
-                <option value="popular" {% if so == 'popular' %}selected{% endif %}>인기순</option>
-            </select>
+    <div class="row">
+        <div class="col-sm-12 col-md-3 col-lg-2 p-2">
+            <!-- 사이드 바 -->
+            <nav id="sidebars" class="border-secondary">
+                <div class="list-group">
+                    {% for cat in category_list %}
+                        {% if cat == category %}
+                            <a class="list-group-item list-group-item-action list-group-item-light active"
+                            href="{{ cat.get_absoulte_url }}">{{ cat.description }}</a>
+                        {% else %}
+                            <a class="list-group-item list-group-item-action list-group-item-light"
+                            href="{{ cat.get_absoulte_url }}">{{ cat.description }}</a>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </nav>
         </div>
-        <div class="col-4 input-group">
-            <input type="text" class="form-control kw" value="{{ kw|default_if_none:'' }}">
-            <div class="input-group-append">
-                <button class="btn btn-outline-secondary" type="button" id="btn_search">찾기</button>
-            </div>
-        </div>
-    </div>
+        <div class="col-sm-12 col-md-9 col-lg-10 p-2">
+            <!-- 지금 카테고리가 뭔지 보여줌 -->
+            <div id="content" class="border-top border-secondary">
+                <div class="content_block">
+                    <h5 class="border-bottom pl-2 pb-3 my-2">{{ category.description}}</h5>
+                        <div class="row justify-content-between my-3">
+                            <div class="col-2">
+                                <select class="form-control so">
+                                    <option value="recent" {% if so == 'recent' %}selected{% endif %}>최신순</option>
+                                    <option value="recommend" {% if so == 'recommend' %}selected{% endif %}>추천순</option>
+                                    <option value="popular" {% if so == 'popular' %}selected{% endif %}>인기순</option>
+                                </select>
+                            </div>
+                            <div class="col-4 input-group">
+                                <input type="text" class="form-control kw" value="{{ kw|default_if_none:'' }}">
+                                <div class="input-group-append">
+                                    <button class="btn btn-outline-secondary" type="button" id="btn_search">찾기</button>
+                                </div>
+                            </div>
+                        </div>
+                </div>
+            </div>       
  <table class="table">
      <thead>
         <tr class="text-center thead-dark">
@@ -63,6 +87,10 @@
         {% endif %}
         </tbody>
  </table>
+ <a href="{% url 'pybo:question_create' %}" class="btn btn-primary">질문등록하기</a>
+</div>
+</div>
+</div>
  <!-- 페이징 처리 시작 -->
  <ul class="pagination justify-content-center">
     <!-- 이전 페이지 -->
@@ -103,7 +131,8 @@
     {% endif %}
 </ul>
 <!-- 페이징 처리 끝 -->
- <a href="{% url 'pybo:question_create' %}" class="btn btn-primary">질문등록하기</a>
+ 
+
 </div>
 <form id="searchForm" method="get" action="{% url 'index' %}">
     <input type="hidden" id="kw" name="kw" value="{{ kw|default_if_none:'' }}">

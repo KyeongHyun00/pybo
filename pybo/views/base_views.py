@@ -1,7 +1,7 @@
 from django.core.paginator import Paginator
 from django.shortcuts import render, get_object_or_404
 
-from ..models import Question, Answer, QuestionCount
+from ..models import Question, Answer, QuestionCount, Category
 from django.db.models import Q, Count
 
 def get_client_ip(request):
@@ -12,7 +12,7 @@ def get_client_ip(request):
         ip = request.META.get('REMOTE_ADDR')
     return ip
 
-def index(request):
+def index(request, category_name='qna'):
     """
     pybo 목록 출력
     """
@@ -21,15 +21,20 @@ def index(request):
     kw = request.GET.get('kw', '') #검색어
     so = request.GET.get('so', 'recent') #정렬 기준
 
+    #카테고리 보여주기
+    category_list = Category.objects.all()
+    category = get_object_or_404(Category, name=category_name)
+    question_list = Question.objects.filter(category=category)
+
     # 정렬
     if so == 'recommend':
-        question_list = Question.objects.annotate(
+        question_list = question_list.annotate(
             num_voter=Count('voter')).order_by('-num_voter', '-create_date')
     elif so == 'popular':
-        question_list = Question.objects.annotate(
+        question_list = question_list.annotate(
             num_answer=Count('answer')).order_by('-num_answer', '-create_date')
     else: # recent
-        question_list = Question.objects.order_by('-create_date')
+        question_list = question_list.order_by('-create_date')
 
     if kw:
         question_list = question_list.filter(
@@ -43,7 +48,8 @@ def index(request):
     paginator = Paginator(question_list, 10)  # 페이지당 10개씩 보여 주기
     page_obj = paginator.get_page(page)
 
-    context = {'question_list': page_obj, 'page': page, 'kw': kw, 'so': so} # page와 kw가 추가됨
+    context = {'question_list': page_obj, 'page': page, 'kw': kw, 'so': so,
+                'category_list': category_list, 'category': category} # page와 kw가 추가됨
     return render(request, 'pybo/question_list.html', context)
 
 def detail(request, question_id):
