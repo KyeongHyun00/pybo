@@ -49,7 +49,7 @@ def index(request, category_name='qna'):
     page_obj = paginator.get_page(page)
 
     context = {'question_list': page_obj, 'page': page, 'kw': kw, 'so': so,
-                'category_list': category_list, 'category': category} # page와 kw가 추가됨
+                'category_list': category_list, 'category': category} # category_list, category추가
     return render(request, 'pybo/question_list.html', context)
 
 def detail(request, question_id):

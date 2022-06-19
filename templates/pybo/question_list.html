@@ -10,10 +10,10 @@
                     {% for cat in category_list %}
                         {% if cat == category %}
                             <a class="list-group-item list-group-item-action list-group-item-light active"
-                            href="{{ cat.get_absoulte_url }}">{{ cat.description }}</a>
+                            href="{{ cat.name }}">{{ cat.description }}</a>
                         {% else %}
                             <a class="list-group-item list-group-item-action list-group-item-light"
-                            href="{{ cat.get_absoulte_url }}">{{ cat.description }}</a>
+                            href="{{ cat.name }}">{{ cat.description }}</a>
                         {% endif %}
                     {% endfor %}
                 </div>
@@ -87,7 +87,7 @@
         {% endif %}
         </tbody>
  </table>
- <a href="{% url 'pybo:question_create' %}" class="btn btn-primary">질문등록하기</a>
+ <a href="{% url 'pybo:question_create' category.name %}" class="btn btn-primary">질문등록하기</a>
 </div>
 </div>
 </div>
@@ -131,8 +131,6 @@
     {% endif %}
 </ul>
 <!-- 페이징 처리 끝 -->
- 
-
 </div>
 <form id="searchForm" method="get" action="{% url 'index' %}">
     <input type="hidden" id="kw" name="kw" value="{{ kw|default_if_none:'' }}">

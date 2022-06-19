@@ -4,20 +4,22 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.utils import timezone
 
 from ..forms import QuestionForm
-from ..models import Question
+from ..models import Question, Category
 
 
 @login_required(login_url='common:login')
-def question_create(request):
+def question_create(request, category_name):
     """
     pybo 질문 등록
     """
+    category = Category.objects.get(name=category_name)
     if request.method == 'POST':
         form = QuestionForm(request.POST)
         if form.is_valid():
             question = form.save(commit=False)
             question.author = request.user  # 추가한 속성 author 적용
             question.create_date = timezone.now()
+            question.category = category
             question.save()
             return redirect('pybo:index')
     else:
@@ -45,7 +47,7 @@ def question_modify(request, question_id):
             return redirect('pybo:detail', question_id=question.id)
     else:
         form = QuestionForm(instance=question)
-    context = {'form': form}
+    context = {'form': form, 'category': question.category}
     return render(request, 'pybo/question_form.html', context)
 
 @login_required(login_url='common:login')

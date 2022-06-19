@@ -1,6 +1,5 @@
 from django.db import models
 from django.contrib.auth.models import User
-from django.urls import reverse
 
 class Category(models.Model):
     name = models.CharField(max_length=20, unique=True)
@@ -9,9 +8,6 @@ class Category(models.Model):
 
     def __str__(self):
         return self.name
-    
-    def get_absolute_url(self):
-        return reverse('pybo:index', args=[self.name])
 
 class Question(models.Model):
     author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='author_question')
